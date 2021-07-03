@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{
+    background-color: #c5c5da5b;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.selections{
+    display: flex;
+    justify-content: center;
+}
+.selection{
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 4rem;
+    transition: 500ms;
+}
+.selection:hover{
+    transform: scale(1.2);
+}
+
+.results{
+    font-size: 1.7rem;
+    color: #191721;
+    font-weight: 700;
+    margin-top:  4rem;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    align-items: center;
+}
+.result-score{
+    margin-left: .1rem;
+    font-size: 1.7rem;
+    color: #333;
+}
+.result-selection{
+opacity: 0.5;
+}
+.result-selection.winner{
+opacity: 1;
+font-size:2rem ;
+}
+    </style>
+    
+    <title>Rock Game</title>
+</head>
+<body>
+    <div class="selections">
+        <button class="selection" data-selection="rock">👊</button>
+        <button class="selection" data-selection="paper">🧻</button>
+        <button class="selection" data-selection="scissors">✂</button>
+    </div>
+    <div class="results">
+        <div>You :
+            <span class="result-score" data-your-score>0</span>
+        </div>
+        <div data-final-column>Computer :
+            <span class="result-score" data-computer-score>0</span>
+        </div>
+        <!-- <div class="result-selection winner">✂</div>
+        <div class="result-selection">✂</div> -->
+    </div>
+    <script>
+        const selectionButtons = document.querySelectorAll('[data-selection]')
+const finalColumn = document.querySelector('[data-final-column]')
+const computerScoreSpan = document.querySelector('[data-computer-score]')
+const yourScoreSpan = document.querySelector('[data-your-score]')
+
+const SELECTIONS = [
+{
+    name: 'rock',
+    emoji: '👊',
+    beats : 'scissors'
+},
+{
+    name: 'scissors',
+    emoji: '✂',
+    beats : 'paper'
+},
+{
+    name: 'paper',
+    emoji: '🧻',
+    beats : 'rock'
+}
+]
+selectionButtons.forEach(selectionButton => {
+    selectionButton.addEventListener('click', e=> {
+        const selectionName = selectionButton.dataset.selection
+        const selection = SELECTIONS.find(selection => selection.name === selectionName)
+        makeSelection(selection)
+    })
+})
+
+function makeSelection(selection) {
+    const computerSelection = randomSelection()
+    const yourWinner = isWinner(selection, computerSelection)
+    const computerWinner = isWinner(computerSelection, selection)
+    addSelectionResult(computerSelection,computerWinner)
+    addSelectionResult(selection, yourWinner)  
+
+    if(yourWinner) imncrementScore(yourScoreSpan)
+    if(computerWinner) imncrementScore(computerScoreSpan)
+}
+function imncrementScore(scoreSpan) {
+    scoreSpan.innerText = parseInt(scoreSpan.innerText) + 1
+}
+
+function addSelectionResult(selection, winner){
+    const div = document.createElement('div')
+    div.innerText = selection.emoji
+    div.classList.add('result-selection')
+    if(winner) div.classList.add('winner')
+    finalColumn.after(div)
+}
+
+function isWinner(selection, opponentSelection){
+    return selection.beats === opponentSelection.name
+}
+
+function randomSelection(){
+    const randomIndex = Math.floor(Math.random() * SELECTIONS.length)
+    return SELECTIONS[randomIndex]
+}
+    </script>
+</body>
+</html>
